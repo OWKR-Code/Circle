@@ -5,7 +5,48 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Circle | Create Account</title>
 <?php
+// Include database connection
+include "include/con.php";
 
+$error = "";
+
+// Handle form submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $fullName = $_POST['fullName'];
+    $email = $_POST['email'];
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+    $confirmPassword = $_POST['confirmPassword'];
+
+    // Check for empty fields
+    if (empty($fullName) || empty($email) || empty($username) || empty($password) || empty($confirmPassword)) {
+        $error = "All fields are required.";
+    } elseif ($password !== $confirmPassword) {
+        $error = "Passwords do not match.";
+    } else {
+        // Check if username exists
+        $stmt = $con->prepare("SELECT * FROM users WHERE username = ?");
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            $error = "Username already exists.";
+        } else {
+            // Insert new user
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+            $stmt = $con->prepare("INSERT INTO users (full_name, email, username, password) VALUES (?, ?, ?, ?)");
+            $stmt->bind_param("ssss", $fullName, $email, $username, $hashedPassword);
+
+            if ($stmt->execute()) {
+                echo "<script>alert('Account created successfully!'); window.location.href='login.php';</script>";
+            } else {
+                $error = "Failed to create account. Please try again.";
+            }
+        }
+        $stmt->close();
+    }
+}
 ?>
 <style>
   body {
@@ -34,6 +75,13 @@
     font-weight: bold;
     font-size: 24px;
     margin-bottom: 20px;
+  }
+
+  .error {
+    color: red;
+    font-size: 14px;
+    margin-bottom: 15px;
+    text-align: center;
   }
 
   .inputContainer {
@@ -93,22 +141,22 @@
 </style>
 </head>
 <body>
-  <form class="form">
+  <form class="form" method="POST">
     <p class="login">Create a Circle Account</p>
+    <?php if ($error): ?>
+      <div class="error"><?= htmlspecialchars($error) ?></div>
+    <?php endif; ?>
     <div class="inputContainer">
-      <input placeholder="Full Name" onchange="function checkUsername() {
-
-      }
-      checkUsername() " type="text" class="fInput">
-      <input placeholder="Email Address" type="email" class="fInput">
-      <input placeholder="Username" type="text" class="fInput">
-      <input placeholder="Password" type="password" class="fInput">
-      <input placeholder="Confirm Password" type="password" class="fInput">
+      <input placeholder="Full Name" name="fullName" type="text" class="fInput">
+      <input placeholder="Email Address" name="email" type="email" class="fInput">
+      <input placeholder="Username" name="username" type="text" class="fInput">
+      <input placeholder="Password" name="password" type="password" class="fInput">
+      <input placeholder="Confirm Password" name="confirmPassword" type="password" class="fInput">
     </div>
-    <button type="button" class="submit">Sign Up</button>
+    <button type="submit" class="submit">Sign Up</button>
     <div class="login-link">
       <p>Already have an account?</p>
-      <a href="#">Log in</a>
+      <a href="login.php">Log in</a>
     </div>
   </form>
 </body>
