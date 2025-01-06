@@ -1,0 +1,11 @@
+@import "CSS/root.css";
+@import "CSS/font.css";
+
+
+body {
+    background-color: black;
+}
+
+body p {
+    color: var(--LYNX_WHITE);
+}

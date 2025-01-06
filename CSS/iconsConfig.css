@@ -1,8 +1,0 @@
-.DEFAULT_ICON {
-    width: 10%;
-    height: auto;
-}
-.DEFAULT_ICON:hover {
-    width: 15%;
-    transition: 0.2s;
-}

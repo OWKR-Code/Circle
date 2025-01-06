@@ -1,19 +1,11 @@
-@import './root.css';
-@import './font.css';
+@import "CSS/root.css";
+@import "CSS/font.css";
+
 header {
-    display: flex;
-    flex-direction: row;
-
+    background-color: var( --MAZARINE_BLUE);
 }
 
-.header_sec1_back_gray {
-    background-color: var(--HINTS_OF_PENSIVE);
-    border-radius: 10px;
-    padding: 1%;
-    margin-right: 80%;
-
-}
-.HeaderItem_text {
-    font-family: "Poppins", serif;
-    color: var(--VANADYL_BLUE);
+header p {
+    color: var(--LYNX_WHITE);
+    font-family: "Noto Sans", serif;;
 }
