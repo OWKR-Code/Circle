@@ -1,0 +1,36 @@
+@import "CSS/root.css";
+@import "CSS/font.css";
+
+
+
+.CTA
+ {
+    color: white;
+    font-size: 2vw;
+    font-family: monospace;
+    font-weight: bold;
+    text-align: center;
+    width: 100%;
+    margin-top: 20%;
+}
+
+.CTA2
+{
+   color: lightskyblue;
+   text-align: center;
+   font-size: 1.5vw;
+   font-family: monospace;
+   font-weight: bold;
+}
+
+button
+{
+   background-color: lightcoral;
+   outline: none;
+   border: none;
+   padding: 1%;
+   width: 10%;
+   border-radius: 10px;
+
+}
+
