@@ -43,6 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Set session variables
             $_SESSION['USERNAME'] = $row['username'];
             $_SESSION['NAME'] = $row['fullName'];
+            $_SESSION['ID'] = $row['ID'];
             $_SESSION['CIRCLE'] = checkIfUserInCircle($row['ID'], $localCon, $row['CircleID']);
 
             // Redirect to the homepage after successful login
