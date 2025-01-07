@@ -1,30 +1,32 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Circle | Create Account</title>
 <?php
-// Include database connection
-include "include/con.php";
+// Enable error reporting
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-$error = "";
+    $con = new mysqli("localhost", "root", "", "Circle");
+// Include database connection
+
+
+$error = ""; // To store error messages
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $fullName = $_POST['fullName'];
-    $email = $_POST['email'];
-    $username = $_POST['username'];
+    $fullName = trim($_POST['fullName']);
+    $email = trim($_POST['email']);
+    $username = trim($_POST['username']);
     $password = $_POST['password'];
     $confirmPassword = $_POST['confirmPassword'];
 
-    // Check for empty fields
+    // Validate input fields
     if (empty($fullName) || empty($email) || empty($username) || empty($password) || empty($confirmPassword)) {
         $error = "All fields are required.";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error = "Invalid email format.";
     } elseif ($password !== $confirmPassword) {
         $error = "Passwords do not match.";
     } else {
-        // Check if username exists
+        // Check if the username already exists
         $stmt = $con->prepare("SELECT * FROM users WHERE username = ?");
         $stmt->bind_param("s", $username);
         $stmt->execute();
@@ -33,13 +35,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($result->num_rows > 0) {
             $error = "Username already exists.";
         } else {
-            // Insert new user
+            // Insert new user into the database
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-            $stmt = $con->prepare("INSERT INTO users (full_name, email, username, password) VALUES (?, ?, ?, ?)");
+            $stmt = $con->prepare("INSERT INTO users (fullName, email, username, password) VALUES (?, ?, ?, ?)");
             $stmt->bind_param("ssss", $fullName, $email, $username, $hashedPassword);
 
             if ($stmt->execute()) {
                 echo "<script>alert('Account created successfully!'); window.location.href='login.php';</script>";
+                exit;
             } else {
                 $error = "Failed to create account. Please try again.";
             }
@@ -48,6 +51,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Circle | Create Account</title>
 <style>
   body {
     display: flex;
@@ -147,9 +156,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <div class="error"><?= htmlspecialchars($error) ?></div>
     <?php endif; ?>
     <div class="inputContainer">
-      <input placeholder="Full Name" name="fullName" type="text" class="fInput">
-      <input placeholder="Email Address" name="email" type="email" class="fInput">
-      <input placeholder="Username" name="username" type="text" class="fInput">
+      <input placeholder="Full Name" name="fullName" type="text" class="fInput" value="<?= htmlspecialchars($_POST['fullName'] ?? '') ?>">
+      <input placeholder="Email Address" name="email" type="email" class="fInput" value="<?= htmlspecialchars($_POST['email'] ?? '') ?>">
+      <input placeholder="Username" name="username" type="text" class="fInput" value="<?= htmlspecialchars($_POST['username'] ?? '') ?>">
       <input placeholder="Password" name="password" type="password" class="fInput">
       <input placeholder="Confirm Password" name="confirmPassword" type="password" class="fInput">
     </div>
